@@ -5,6 +5,8 @@ export type InputKind = "text" | "url";
 
 export type Severity = "low" | "medium" | "high";
 
+export type Lang = "ru" | "en";
+
 export interface RiskFlag {
   /** Short machine-readable code, e.g. "absolute_claim". */
   code: string;
@@ -48,14 +50,18 @@ export interface AnalysisReport {
   aiMode: string;
   /** Standard disclaimer we attach to every report. */
   disclaimer: string;
+  /** Language the localized strings in this report are rendered in. */
+  lang: Lang;
 }
 
 export interface AnalyzeTextRequest {
   text: string;
+  lang?: Lang;
 }
 
 export interface AnalyzeUrlRequest {
   url: string;
+  lang?: Lang;
 }
 
 export interface ReportsResponse {

@@ -7,6 +7,8 @@ const BASE =
   (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/+$/, "") ??
   "/api";
 
+export type Lang = "ru" | "en";
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
@@ -40,17 +42,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return data as T;
 }
 
-export function analyzeText(text: string): Promise<AnalysisReport> {
+export function analyzeText(text: string, lang: Lang): Promise<AnalysisReport> {
   return request<AnalysisReport>("/analyze/text", {
     method: "POST",
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, lang }),
   });
 }
 
-export function analyzeUrl(url: string): Promise<AnalysisReport> {
+export function analyzeUrl(url: string, lang: Lang): Promise<AnalysisReport> {
   return request<AnalysisReport>("/analyze/url", {
     method: "POST",
-    body: JSON.stringify({ url }),
+    body: JSON.stringify({ url, lang }),
   });
 }
 

@@ -1,0 +1,146 @@
+{
+  "brand": {
+    "name": "TrustLayer",
+    "tagline": "Risk-analysis tool for digital content. Not a truth detector."
+  },
+  "banner": "TrustLayer evaluates phrasing, sourcing patterns, and risk signals. It does not verify facts. Always corroborate important claims with primary sources.",
+  "nav": {
+    "analyze": "Analyze",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "language": "Language"
+  },
+  "lang": {
+    "en": "English",
+    "ru": "Russian"
+  },
+  "input": {
+    "title": "Analyze content",
+    "tab_text": "Text",
+    "tab_url": "URL",
+    "text_label": "Text to analyze",
+    "text_placeholder": "Paste an article, a social post, or any block of text…",
+    "text_counter": "{{count}} / 20,000 characters",
+    "url_label": "URL",
+    "url_placeholder": "https://example.com/article",
+    "url_hint": "The server will fetch the URL and analyze the extracted text.",
+    "submit": "Analyze",
+    "submitting": "Analyzing…"
+  },
+  "history": {
+    "title": "History",
+    "empty": "No analyses yet."
+  },
+  "empty": {
+    "title": "No analysis yet",
+    "body": "Paste text or a URL on the left and run an analysis. Results will appear here with a risk score, flagged patterns, and a plain-language explanation."
+  },
+  "results": {
+    "title": "Risk analysis",
+    "text_input": "Text input",
+    "ai_badge": "AI: {{mode}}",
+    "flags_title": "Risk flags ({{count}})",
+    "flags_empty": "No risk flags raised.",
+    "patterns_title": "Suspicious patterns ({{count}})",
+    "patterns_empty": "None detected.",
+    "claims_title": "Unverifiable claims ({{count}})",
+    "claims_empty": "No unverifiable claims were identified. This does not mean the content is verified — just that no unsourced authority appeals were detected."
+  },
+  "severity": {
+    "low": "low",
+    "medium": "medium",
+    "high": "high"
+  },
+  "band": {
+    "good": "Lower risk",
+    "mixed": "Mixed risk",
+    "caution": "Higher risk",
+    "danger": "High risk"
+  },
+  "gauge_aria": "Risk score {{score}} of 100, {{label}}",
+  "explanation": {
+    "title": "Explanation",
+    "show_text": "Show analyzed text ({{count}} chars)",
+    "hide_text": "Hide analyzed text ({{count}} chars)"
+  },
+  "alert": {
+    "history_failed": "History failed: {{message}}",
+    "history_generic": "History request failed.",
+    "unknown_error": "Unknown error"
+  },
+  "footer": "TrustLayer MVP · React + Vite on Cloudflare Pages · Yandex Cloud Functions + YandexGPT",
+  "consent": {
+    "title": "We use cookies and process text you submit",
+    "body": "TrustLayer stores the text you submit for analysis so we can show it back in your history. Analysis is performed via YandexGPT. By clicking \"Accept\", you agree to our <1>Terms</1> and <3>Privacy Policy</3>.",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "updated": "Last updated: {{date}}",
+    "sections": [
+      {
+        "h": "1. What TrustLayer is",
+        "p": "TrustLayer is a risk-analysis tool for digital content. It evaluates phrasing, sourcing patterns, and rhetorical signals and returns a numeric trust score, a list of flags, and a plain-language explanation. TrustLayer is <b>not</b> a truth detector, fact-checker, or legal/medical/financial advice. Scores reflect phrasing risk, not factual accuracy."
+      },
+      {
+        "h": "2. Acceptable use",
+        "p": "You agree not to submit content that is illegal, contains personal data of third parties without consent, infringes intellectual property, or is intended to train, fine-tune, or evade moderation systems. You must not attempt to overwhelm the service (rate limits apply per account)."
+      },
+      {
+        "h": "3. No warranty",
+        "p": "The service is provided \"as is\" without warranty of any kind. Trust scores are heuristics and can be wrong. Do not rely on TrustLayer alone for decisions that require verified facts. You are responsible for independently verifying claims."
+      },
+      {
+        "h": "4. Accounts",
+        "p": "An account is required for history and quota tracking. You are responsible for the confidentiality of your credentials. We may suspend accounts that abuse the service."
+      },
+      {
+        "h": "5. Liability",
+        "p": "To the maximum extent permitted by applicable law, TrustLayer and its operators are not liable for indirect, incidental, or consequential damages arising from use of the service."
+      },
+      {
+        "h": "6. Changes",
+        "p": "We may update these terms. Material changes will be announced in-app. Continued use after a change constitutes acceptance."
+      },
+      {
+        "h": "7. Contact",
+        "p": "Questions: open an issue on the project repository."
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "updated": "Last updated: {{date}}",
+    "sections": [
+      {
+        "h": "1. What we collect",
+        "p": "When you submit text or a URL, we store the text that was analyzed (truncated to 20,000 chars), the resulting trust report, and the timestamp. When you create an account, we store your email address and a hashed password (via Supabase Auth). We do not collect tracking identifiers, advertising IDs, or precise location."
+      },
+      {
+        "h": "2. Where data is sent",
+        "p": "Submitted text is sent to YandexGPT (Yandex LLC, Russian Federation) for analysis. The resulting report is stored in our Supabase Postgres database (EU region). We do not sell or share your data with third parties for advertising."
+      },
+      {
+        "h": "3. Retention",
+        "p": "Reports are retained for as long as your account exists. You can delete individual reports from your dashboard, or delete your account entirely (which removes all associated reports within 30 days)."
+      },
+      {
+        "h": "4. Legal basis",
+        "p": "We process data based on your consent (obtained at sign-up) and to perform the service you requested. For users in the EEA, the legal basis is GDPR Art. 6(1)(a) and 6(1)(b). For users in the Russian Federation, we rely on consent under Federal Law No. 152-FZ."
+      },
+      {
+        "h": "5. Your rights",
+        "p": "You may request access, correction, export, or deletion of your data at any time. Email the operator of this deployment (see the repository README) to exercise these rights."
+      },
+      {
+        "h": "6. Children",
+        "p": "TrustLayer is not directed at users under 16. Do not use the service if you are under the minimum digital consent age in your jurisdiction."
+      },
+      {
+        "h": "7. Security",
+        "p": "We use TLS in transit and delegate password hashing and session management to Supabase Auth. No system is 100% secure — use a strong, unique password."
+      }
+    ]
+  }
+}

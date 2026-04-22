@@ -1,15 +1,14 @@
+import { DISCLAIMER, UI } from "../i18n.js";
 import type {
   AiAnalysis,
   AnalysisReport,
   InputKind,
+  Lang,
   RiskFlag,
   SuspiciousPattern,
   UnverifiableClaim,
 } from "../types.js";
 import type { RuleOutput } from "./rules.js";
-
-const DISCLAIMER =
-  "TrustLayer is a risk-analysis tool, not a truth detector. Scores reflect phrasing and sourcing patterns, not factual accuracy. Always verify important claims with primary sources.";
 
 export interface CombineInput {
   id: string;
@@ -19,6 +18,7 @@ export interface CombineInput {
   aiAnalysis: AiAnalysis;
   rules: RuleOutput;
   aiMode: string;
+  lang: Lang;
 }
 
 export function combineReport(input: CombineInput): AnalysisReport {
@@ -30,6 +30,7 @@ export function combineReport(input: CombineInput): AnalysisReport {
     aiAnalysis,
     rules,
     aiMode,
+    lang,
   } = input;
 
   // Blend: 60% AI credibility, 40% (100 - rule penalty).
@@ -39,9 +40,10 @@ export function combineReport(input: CombineInput): AnalysisReport {
   const trustScore = Math.max(0, Math.min(100, Math.round(blended)));
 
   // Merge rule-based risky patterns with AI-detected risky phrases.
+  const riskyPhrasingFallback = UI[lang].riskyPhrasing;
   const aiFlags: RiskFlag[] = aiAnalysis.riskyPhrases.map((p, i) => ({
     code: `ai_risky_${i}`,
-    label: p.reason || "Risky phrasing",
+    label: p.reason || riskyPhrasingFallback,
     severity: p.severity,
     evidence: p.phrase,
   }));
@@ -59,6 +61,7 @@ export function combineReport(input: CombineInput): AnalysisReport {
     riskFlags,
     unverifiableClaims,
     aiRationale: aiAnalysis.rationale,
+    lang,
   });
 
   return {
@@ -73,7 +76,8 @@ export function combineReport(input: CombineInput): AnalysisReport {
     unverifiableClaims,
     explanation,
     aiMode,
-    disclaimer: DISCLAIMER,
+    disclaimer: DISCLAIMER[lang],
+    lang,
   };
 }
 
@@ -106,9 +110,10 @@ function buildExplanation(args: {
   riskFlags: RiskFlag[];
   unverifiableClaims: UnverifiableClaim[];
   aiRationale: string;
+  lang: Lang;
 }): string {
-  const { trustScore, riskFlags, unverifiableClaims, aiRationale } = args;
-  const band =
+  const { trustScore, riskFlags, unverifiableClaims, aiRationale, lang } = args;
+  const bandKey =
     trustScore >= 75
       ? "lower-risk"
       : trustScore >= 50
@@ -117,28 +122,23 @@ function buildExplanation(args: {
           ? "higher-risk"
           : "high-risk";
 
+  const t = UI[lang];
+  const band = t.bandLabel(bandKey as "lower-risk" | "mixed-risk" | "higher-risk" | "high-risk");
+
   const highSev = riskFlags.filter((f) => f.severity === "high").length;
   const medSev = riskFlags.filter((f) => f.severity === "medium").length;
 
   const parts: string[] = [];
-  parts.push(
-    `This content is in the ${band} band (score ${trustScore}/100). This reflects phrasing and sourcing patterns, not factual accuracy.`,
-  );
+  parts.push(t.explanationHeadline(band, trustScore));
   if (highSev || medSev) {
-    parts.push(
-      `We found ${highSev} high-severity and ${medSev} medium-severity risk signal(s) in the text.`,
-    );
+    parts.push(t.signalCounts(highSev, medSev));
   } else if (riskFlags.length === 0) {
-    parts.push(
-      "No strong risk signals were detected, but absence of red flags does not confirm accuracy.",
-    );
+    parts.push(t.noSignals);
   }
   if (unverifiableClaims.length > 0) {
-    parts.push(
-      `${unverifiableClaims.length} claim(s) reference authorities or data without a verifiable source.`,
-    );
+    parts.push(t.unverifiableClaimsCount(unverifiableClaims.length));
   }
-  if (aiRationale) parts.push(`Model rationale: ${aiRationale}`);
+  if (aiRationale) parts.push(`${t.modelRationalePrefix} ${aiRationale}`);
 
   return parts.join(" ");
 }

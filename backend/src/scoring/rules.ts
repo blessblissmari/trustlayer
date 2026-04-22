@@ -1,4 +1,5 @@
-import type { RiskFlag, Severity, SuspiciousPattern } from "../types.js";
+import { RULE_TEXT } from "../i18n.js";
+import type { Lang, RiskFlag, Severity, SuspiciousPattern } from "../types.js";
 
 // Pure rule-based signals. Run on every request, regardless of AI mode, and
 // combined with the AI output in combine.ts. Kept simple so a human can audit
@@ -6,64 +7,47 @@ import type { RiskFlag, Severity, SuspiciousPattern } from "../types.js";
 
 interface PatternDef {
   code: string;
-  label: string;
   re: RegExp;
   severity: Severity;
-  explanation: string;
 }
 
 const PATTERNS: PatternDef[] = [
   {
     code: "absolute_claim",
-    label: "Absolute certainty phrasing",
-    re: /\b(100% (guaranteed|proven|true|false)|absolutely (true|false)|undeniable proof|scientifically proven)\b/gi,
+    re: /\b(100% (guaranteed|proven|true|false)|absolutely (true|false)|undeniable proof|scientifically proven|100% (гарантировано|доказано)|абсолютно (верно|неверно)|неопровержимо доказано)\b/giu,
     severity: "high",
-    explanation:
-      "Phrases asserting absolute certainty are rare in well-sourced reporting.",
   },
   {
     code: "clickbait_health",
-    label: "Clickbait / health-miracle phrasing",
-    re: /\b(miracle cure|one weird trick|doctors hate|secret (method|trick|formula)|big pharma doesn't want)\b/gi,
+    re: /\b(miracle cure|one weird trick|doctors hate|secret (method|trick|formula)|big pharma doesn't want|чудо-средство|чудо средство|один странный трюк|врачи (это )?скрывают|секретный (метод|рецепт|приём))\b/giu,
     severity: "high",
-    explanation:
-      "Phrasing strongly associated with health misinformation and clickbait.",
   },
   {
     code: "conspiracy_framing",
-    label: "Conspiracy framing",
-    re: /\b(they don't want you to know|the (mainstream )?media is hiding|wake up sheeple|do your own research)\b/gi,
+    re: /\b(they don't want you to know|the (mainstream )?media is hiding|wake up sheeple|do your own research|они не хотят, чтобы вы (это )?знали|сми (это )?скрывают|проснитесь)\b/giu,
     severity: "medium",
-    explanation: "Framing that positions the reader against unnamed actors.",
   },
   {
     code: "unnamed_authority",
-    label: "Appeal to unnamed authority",
-    re: /\b(studies show|experts say|scientists confirm|research proves|data shows)\b(?![^.]*\bhttps?:\/\/)/gi,
+    // English: 'studies show ...' (not followed by a URL).
+    // Russian equivalents: 'исследования показывают', 'учёные утверждают', etc.
+    re: /\b(studies show|experts say|scientists confirm|research proves|data shows|исследования (показывают|доказывают)|учёные (утверждают|подтверждают|говорят)|эксперты (говорят|считают)|данные показывают)\b(?![^.]*\bhttps?:\/\/)/giu,
     severity: "medium",
-    explanation:
-      "Cites 'studies' or 'experts' without naming them or linking to a source.",
   },
   {
     code: "urgency_pressure",
-    label: "Urgency / pressure tactics",
-    re: /\b(act now|limited time|urgent|don't wait|last chance|only today)\b/gi,
+    re: /\b(act now|limited time|urgent|don't wait|last chance|only today|успей(те)?|ограниченное время|срочно|не жди(те)?|последний шанс|только сегодня)\b/giu,
     severity: "low",
-    explanation: "Pressure tactics that can reduce careful evaluation.",
   },
   {
     code: "excessive_caps",
-    label: "Excessive ALL-CAPS",
-    re: /\b[A-Z]{6,}\b/g,
+    re: /\b[A-ZА-ЯЁ]{6,}\b/gu,
     severity: "low",
-    explanation: "Long all-caps runs often indicate emotional framing.",
   },
   {
     code: "excessive_exclaim",
-    label: "Excessive exclamation marks",
     re: /!{3,}/g,
     severity: "low",
-    explanation: "Heavy punctuation often correlates with low-quality content.",
   },
 ];
 
@@ -74,7 +58,7 @@ export interface RuleOutput {
   penalty: number;
 }
 
-export function applyRules(text: string): RuleOutput {
+export function applyRules(text: string, lang: Lang = "ru"): RuleOutput {
   const flags: RiskFlag[] = [];
   const patterns: SuspiciousPattern[] = [];
   let penalty = 0;
@@ -85,19 +69,20 @@ export function applyRules(text: string): RuleOutput {
 
     const count = matches.length;
     const evidence = matches[0]?.slice(0, 120);
+    const text_ = RULE_TEXT[p.code]?.[lang] ?? { label: p.code, explanation: "" };
 
     flags.push({
       code: p.code,
-      label: p.label,
+      label: text_.label,
       severity: p.severity,
       evidence,
     });
 
     patterns.push({
-      pattern: p.label,
+      pattern: text_.label,
       count,
       severity: p.severity,
-      explanation: p.explanation,
+      explanation: text_.explanation,
     });
 
     // Diminishing returns so one spammy input doesn't drive the score to 0
@@ -108,9 +93,10 @@ export function applyRules(text: string): RuleOutput {
 
   // Tiny inputs are inherently low-signal.
   if (text.trim().length < 40) {
+    const text_ = RULE_TEXT.input_too_short[lang];
     flags.push({
       code: "input_too_short",
-      label: "Input too short for meaningful analysis",
+      label: text_.label,
       severity: "low",
       evidence: text.trim().slice(0, 60),
     });
