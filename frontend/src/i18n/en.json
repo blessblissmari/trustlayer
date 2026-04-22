@@ -29,7 +29,9 @@
   },
   "history": {
     "title": "History",
-    "empty": "No analyses yet."
+    "empty": "No analyses yet.",
+    "kind_text": "text",
+    "kind_url": "url"
   },
   "empty": {
     "title": "No analysis yet",
@@ -142,5 +144,39 @@
         "p": "We use TLS in transit and delegate password hashing and session management to Supabase Auth. No system is 100% secure — use a strong, unique password."
       }
     ]
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "signup": "Sign up",
+    "account": "Account",
+    "login_title": "Log in to TrustLayer",
+    "signup_title": "Create an account",
+    "reset_title": "Reset password",
+    "set_password_title": "Set a new password",
+    "email": "Email",
+    "password": "Password",
+    "new_password": "New password",
+    "password_hint": "At least 8 characters",
+    "password_too_short": "Password must be at least 8 characters",
+    "submitting": "Submitting…",
+    "signup_check_email": "We sent a confirmation email. Check your inbox.",
+    "send_reset": "Send reset link",
+    "reset_email_sent": "If that email is registered, a reset link has been sent.",
+    "update_password": "Update password",
+    "password_updated": "Password updated. Redirecting…",
+    "forgot_password": "Forgot password?",
+    "no_account": "No account? Sign up",
+    "have_account": "Already have an account? Log in",
+    "back_to_login": "Back to log in",
+    "unconfigured": "Authentication is not configured in this build."
+  },
+  "account": {
+    "title": "Your account",
+    "quota_title": "Daily quota",
+    "quota_used": "{{used}} of {{max}} analyses used today.",
+    "history_title": "Your reports",
+    "history_empty": "You haven't run an analysis yet.",
+    "run_analysis": "Run an analysis"
   }
 }

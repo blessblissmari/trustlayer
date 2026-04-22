@@ -3,8 +3,14 @@ import { useTranslation } from "react-i18next";
 import { Link, NavLink, Route, Routes } from "react-router-dom";
 import ConsentBanner from "./components/ConsentBanner";
 import LanguageToggle from "./components/LanguageToggle";
+import ProtectedRoute from "./components/ProtectedRoute";
+import UserMenu from "./components/UserMenu";
+import AccountPage from "./pages/AccountPage";
 import AnalyzePage from "./pages/AnalyzePage";
+import LoginPage from "./pages/LoginPage";
 import PrivacyPage from "./pages/PrivacyPage";
+import ResetPage from "./pages/ResetPage";
+import SignupPage from "./pages/SignupPage";
 import TermsPage from "./pages/TermsPage";
 
 export default function App() {
@@ -36,6 +42,7 @@ export default function App() {
             <NavLink to="/terms">{t("nav.terms")}</NavLink>
             <NavLink to="/privacy">{t("nav.privacy")}</NavLink>
             <LanguageToggle />
+            <UserMenu />
           </nav>
         </div>
         <div className="app__banner" role="note">
@@ -44,7 +51,25 @@ export default function App() {
       </header>
 
       <Routes>
-        <Route path="/" element={<AnalyzePage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AnalyzePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/reset" element={<ResetPage />} />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <AccountPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/terms" element={<LegalShell><TermsPage /></LegalShell>} />
         <Route path="/privacy" element={<LegalShell><PrivacyPage /></LegalShell>} />
       </Routes>

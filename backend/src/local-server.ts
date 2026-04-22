@@ -44,6 +44,12 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   const query: Record<string, string> = {};
   for (const [k, v] of url.searchParams.entries()) query[k] = v;
 
+  const headers: Record<string, string> = {};
+  for (const [k, v] of Object.entries(req.headers)) {
+    if (typeof v === "string") headers[k] = v;
+    else if (Array.isArray(v)) headers[k] = v.join(", ");
+  }
+
   const raw = await readBody(req);
   let body: unknown = null;
   if (raw.length > 0) {
@@ -57,7 +63,7 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
   }
 
   const result = await route(
-    { method: req.method ?? "GET", path: url.pathname, query, body },
+    { method: req.method ?? "GET", path: url.pathname, query, headers, body },
     config,
   );
 
@@ -67,6 +73,6 @@ const server = createServer(async (req: IncomingMessage, res: ServerResponse) =>
 
 server.listen(port, () => {
   console.log(
-    `[trustlayer] local server listening on http://localhost:${port} (AI_MODE=${config.aiMode})`,
+    `[trustlayer] local server listening on http://localhost:${port} (AI_MODE=${config.aiMode}, storage=${config.storage.backend})`,
   );
 });

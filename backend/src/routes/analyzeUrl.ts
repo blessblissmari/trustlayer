@@ -1,7 +1,9 @@
 import { randomUUID } from "node:crypto";
 import type { Config } from "../config.js";
 import { getAiClient } from "../ai/index.js";
+import { getUserFromAuthHeader } from "../auth.js";
 import { normalizeLang } from "../i18n.js";
+import { consumeQuota } from "../quota.js";
 import { combineReport } from "../scoring/combine.js";
 import { applyRules } from "../scoring/rules.js";
 import { getStorage } from "../storage/index.js";
@@ -12,10 +14,20 @@ import type { RouteResponse } from "../router.js";
 
 export async function analyzeUrl(
   body: unknown,
+  headers: Record<string, string> | undefined,
   config: Config,
 ): Promise<RouteResponse> {
   const parsed = parseBody(body);
   const lang: Lang = parsed.lang ?? "ru";
+
+  const user = await getUserFromAuthHeader(headers, config);
+  if (config.storage.backend === "supabase" && !user) {
+    throw new HttpError(401, "Sign in to run an analysis.");
+  }
+
+  if (user) {
+    await consumeQuota(config, user.id);
+  }
 
   let fetched;
   try {
@@ -52,7 +64,7 @@ export async function analyzeUrl(
     lang,
   });
 
-  await getStorage(config).save(report);
+  await getStorage(config).save(report, user?.id);
   return jsonResponse(200, report);
 }
 

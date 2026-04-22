@@ -1,3 +1,4 @@
+import { supabase } from "./supabase";
 import type { AnalysisReport, ReportsResponse } from "./types";
 
 // Base URL for the backend API. In dev, Vite proxies /api -> localhost:8787.
@@ -18,10 +19,22 @@ export class ApiError extends Error {
   }
 }
 
+async function authHeader(): Promise<Record<string, string>> {
+  if (!supabase) return {};
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const auth = await authHeader();
   const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...init,
+    headers: {
+      "Content-Type": "application/json",
+      ...auth,
+      ...(init?.headers ?? {}),
+    },
   });
   const raw = await res.text();
   let data: unknown = null;
@@ -58,4 +71,14 @@ export function analyzeUrl(url: string, lang: Lang): Promise<AnalysisReport> {
 
 export function listReports(limit = 50): Promise<ReportsResponse> {
   return request<ReportsResponse>(`/reports?limit=${limit}`);
+}
+
+export interface QuotaState {
+  used: number;
+  maxPerDay: number;
+  remaining: number;
+}
+
+export function getQuota(): Promise<QuotaState> {
+  return request<QuotaState>("/quota");
 }

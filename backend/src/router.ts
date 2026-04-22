@@ -2,12 +2,14 @@ import type { Config } from "./config.js";
 import { analyzeText } from "./routes/analyzeText.js";
 import { analyzeUrl } from "./routes/analyzeUrl.js";
 import { listReports } from "./routes/reports.js";
+import { getQuota } from "./routes/quota.js";
 import { errorResponse, jsonResponse } from "./http.js";
 
 export interface RouteRequest {
   method: string;
   path: string;
   query: Record<string, string>;
+  headers?: Record<string, string>;
   body: unknown;
 }
 
@@ -43,18 +45,25 @@ export async function route(
     if (method === "GET" && (path === "/" || path === "/health")) {
       return jsonResponse(
         200,
-        { status: "ok", service: "trustlayer", aiMode: config.aiMode },
+        {
+          status: "ok",
+          service: "trustlayer",
+          aiMode: config.aiMode,
+          storage: config.storage.backend,
+        },
         corsHeaders(config),
       );
     }
 
     let res: RouteResponse | undefined;
     if (method === "POST" && path === "/analyze/text") {
-      res = await analyzeText(req.body, config);
+      res = await analyzeText(req.body, req.headers, config);
     } else if (method === "POST" && path === "/analyze/url") {
-      res = await analyzeUrl(req.body, config);
+      res = await analyzeUrl(req.body, req.headers, config);
     } else if (method === "GET" && path === "/reports") {
-      res = await listReports(req.query, config);
+      res = await listReports(req.query, req.headers, config);
+    } else if (method === "GET" && path === "/quota") {
+      res = await getQuota(req.headers, config);
     }
 
     if (!res) {
