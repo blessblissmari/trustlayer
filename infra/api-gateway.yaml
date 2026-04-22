@@ -104,6 +104,24 @@ paths:
       responses:
         "204":
           description: CORS preflight
+  /quota:
+    get:
+      summary: Current daily quota for the signed-in user
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      responses:
+        "200":
+          description: Quota state
+    options:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      responses:
+        "204":
+          description: CORS preflight
   /health:
     get:
       summary: Health check
