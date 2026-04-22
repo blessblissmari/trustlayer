@@ -1,0 +1,26 @@
+{
+  "name": "@trustlayer/backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TrustLayer backend — Yandex Cloud Function handlers for risk analysis.",
+  "type": "module",
+  "main": "dist/handler.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/local-server.ts",
+    "start": "node dist/local-server.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint \"src/**/*.ts\"",
+    "test": "node --test --import tsx tests/*.test.ts",
+    "package": "npm run build && rm -rf package.zip && cd dist && zip -r ../package.zip . && cd .. && zip -ur package.zip node_modules"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "@typescript-eslint/parser": "^8.8.0",
+    "eslint": "^9.11.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}

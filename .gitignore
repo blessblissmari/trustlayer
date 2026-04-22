@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+coverage/
+.vite/
+.cache/
+.parcel-cache/
+.wrangler/
+*.tsbuildinfo
+# Local storage for reports (dev mode)
+backend/data/

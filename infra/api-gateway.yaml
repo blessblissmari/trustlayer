@@ -1,0 +1,116 @@
+# Yandex API Gateway spec for TrustLayer.
+#
+# Docs: https://yandex.cloud/en/docs/api-gateway/concepts/extensions/cloud-functions
+#
+# Replace <FUNCTION_ID> and <SERVICE_ACCOUNT_ID> before creating the gateway:
+#
+#   yc serverless api-gateway create \
+#     --name trustlayer \
+#     --spec=infra/api-gateway.yaml
+#
+openapi: 3.0.0
+info:
+  title: TrustLayer API
+  version: "0.1.0"
+  description: |
+    Risk-analysis API for digital content. NOT a truth detector.
+x-yc-apigateway:
+  cors:
+    origin: "*"
+    methods: "GET, POST, OPTIONS"
+    allowedHeaders: "Content-Type, Authorization"
+paths:
+  /analyze/text:
+    post:
+      summary: Analyze free text
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text]
+              properties:
+                text:
+                  type: string
+                  maxLength: 20000
+      responses:
+        "200":
+          description: Risk analysis report
+    options:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      responses:
+        "204":
+          description: CORS preflight
+  /analyze/url:
+    post:
+      summary: Analyze the text content of a URL
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url:
+                  type: string
+                  format: uri
+      responses:
+        "200":
+          description: Risk analysis report
+    options:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      responses:
+        "204":
+          description: CORS preflight
+  /reports:
+    get:
+      summary: List recent analysis reports
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+      responses:
+        "200":
+          description: A list of recent reports
+    options:
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      responses:
+        "204":
+          description: CORS preflight
+  /health:
+    get:
+      summary: Health check
+      x-yc-apigateway-integration:
+        type: cloud_functions
+        function_id: <FUNCTION_ID>
+        service_account_id: <SERVICE_ACCOUNT_ID>
+      responses:
+        "200":
+          description: OK
