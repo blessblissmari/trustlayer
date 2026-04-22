@@ -1,0 +1,15 @@
+# Cloudflare Pages configuration for the TrustLayer frontend.
+#
+# The Pages project is named "trustlayer" and serves the static build output
+# from `frontend/dist`. Run `wrangler pages deploy frontend/dist
+# --project-name trustlayer` to deploy, or connect this repo in the
+# Cloudflare Pages dashboard with:
+#
+#   Build command:    npm ci && npm --workspace frontend run build
+#   Build output:     frontend/dist
+#   Root directory:   (repo root)
+#   Env (Production): VITE_API_BASE = https://<your-api-gateway-domain>
+#
+name = "trustlayer"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-01-01"
