@@ -1,5 +1,5 @@
 import type { Config } from "../config.js";
-import type { AiAnalysis, Severity } from "../types.js";
+import type { AiAnalysis, Lang, Severity } from "../types.js";
 
 // Server-side YandexGPT client. The API key is read from config, NEVER
 // exposed to the frontend. See:
@@ -9,7 +9,7 @@ import type { AiAnalysis, Severity } from "../types.js";
 // model returns invalid JSON we fall back to a minimal analysis so the whole
 // request doesn't fail.
 
-const SYSTEM_PROMPT = `You are TrustLayer, a risk-analysis assistant.
+const SYSTEM_PROMPT_BASE = `You are TrustLayer, a risk-analysis assistant.
 You do NOT decide whether content is true or false. You assess RISK by
 extracting concrete claims, flagging phrasing patterns associated with
 low-quality or misleading content, and noting claims that cannot be
@@ -40,7 +40,13 @@ Rules:
   certainty, conspiracy framing) over debating factual content.
 - If the input is too short or empty, return an object with empty arrays,
   credibility=50, and rationale explaining why.
-- Output JSON only. No prose, no markdown fences.`;
+- Output JSON only. No prose, no markdown fences.
+- All human-readable string fields (reason, rationale, claims) MUST be written in {{LANGUAGE_FULL}}.`;
+
+function systemPromptFor(lang: Lang): string {
+  const languageFull = lang === "ru" ? "Russian (русский язык)" : "English";
+  return SYSTEM_PROMPT_BASE.replace("{{LANGUAGE_FULL}}", languageFull);
+}
 
 interface YandexCompletionResponse {
   result?: {
@@ -54,6 +60,7 @@ interface YandexCompletionResponse {
 export async function yandexAnalyze(
   text: string,
   config: Config,
+  lang: Lang = "ru",
 ): Promise<AiAnalysis> {
   const body = {
     modelUri: config.yandex.model,
@@ -64,7 +71,7 @@ export async function yandexAnalyze(
       reasoningOptions: { mode: "DISABLED" },
     },
     messages: [
-      { role: "system", text: SYSTEM_PROMPT },
+      { role: "system", text: systemPromptFor(lang) },
       { role: "user", text },
     ],
   };
@@ -176,3 +183,7 @@ function safeFallback(raw: string): AiAnalysis {
       `YandexGPT response could not be parsed as JSON. Raw head: ${raw.slice(0, 160)}`.trim(),
   };
 }
+
+// Explicitly mark Severity as used in inference so tsc doesn't complain if
+// we later prune the import — kept here as a reminder of the AiAnalysis shape.
+export type { Severity };

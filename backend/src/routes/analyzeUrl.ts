@@ -1,11 +1,12 @@
 import { randomUUID } from "node:crypto";
 import type { Config } from "../config.js";
 import { getAiClient } from "../ai/index.js";
+import { normalizeLang } from "../i18n.js";
 import { combineReport } from "../scoring/combine.js";
 import { applyRules } from "../scoring/rules.js";
 import { getStorage } from "../storage/index.js";
 import { fetchUrlAsText, UrlFetchError } from "../urlFetch.js";
-import type { AnalyzeUrlRequest } from "../types.js";
+import type { AnalyzeUrlRequest, Lang } from "../types.js";
 import { HttpError, jsonResponse } from "../http.js";
 import type { RouteResponse } from "../router.js";
 
@@ -14,6 +15,7 @@ export async function analyzeUrl(
   config: Config,
 ): Promise<RouteResponse> {
   const parsed = parseBody(body);
+  const lang: Lang = parsed.lang ?? "ru";
 
   let fetched;
   try {
@@ -35,8 +37,8 @@ export async function analyzeUrl(
 
   const ai = getAiClient(config);
   const [aiAnalysis, rules] = await Promise.all([
-    ai.analyze(truncated),
-    Promise.resolve(applyRules(truncated)),
+    ai.analyze(truncated, lang),
+    Promise.resolve(applyRules(truncated, lang)),
   ]);
 
   const report = combineReport({
@@ -47,6 +49,7 @@ export async function analyzeUrl(
     aiAnalysis,
     rules,
     aiMode: ai.mode,
+    lang,
   });
 
   await getStorage(config).save(report);
@@ -57,9 +60,9 @@ function parseBody(body: unknown): AnalyzeUrlRequest {
   if (typeof body !== "object" || body === null) {
     throw new HttpError(400, "Request body must be a JSON object.");
   }
-  const { url } = body as Record<string, unknown>;
+  const { url, lang } = body as Record<string, unknown>;
   if (typeof url !== "string" || url.trim().length === 0) {
     throw new HttpError(400, "Field 'url' is required and must be a string.");
   }
-  return { url: url.trim() };
+  return { url: url.trim(), lang: normalizeLang(lang) };
 }

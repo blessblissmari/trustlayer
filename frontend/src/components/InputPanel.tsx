@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   onSubmit: (kind: "text" | "url", value: string) => void | Promise<void>;
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export default function InputPanel({ onSubmit, loading }: Props) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<"text" | "url">("text");
   const [text, setText] = useState("");
   const [url, setUrl] = useState("");
@@ -24,8 +26,8 @@ export default function InputPanel({ onSubmit, loading }: Props) {
   return (
     <form className="panel" onSubmit={submit}>
       <div className="panel__header">
-        <h2>Analyze content</h2>
-        <div className="tabs" role="tablist" aria-label="Input type">
+        <h2>{t("input.title")}</h2>
+        <div className="tabs" role="tablist" aria-label={t("input.title")}>
           <button
             type="button"
             role="tab"
@@ -33,7 +35,7 @@ export default function InputPanel({ onSubmit, loading }: Props) {
             className={`tabs__tab ${mode === "text" ? "tabs__tab--active" : ""}`}
             onClick={() => setMode("text")}
           >
-            Text
+            {t("input.tab_text")}
           </button>
           <button
             type="button"
@@ -42,39 +44,37 @@ export default function InputPanel({ onSubmit, loading }: Props) {
             className={`tabs__tab ${mode === "url" ? "tabs__tab--active" : ""}`}
             onClick={() => setMode("url")}
           >
-            URL
+            {t("input.tab_url")}
           </button>
         </div>
       </div>
 
       {mode === "text" ? (
         <label className="field">
-          <span className="field__label">Text to analyze</span>
+          <span className="field__label">{t("input.text_label")}</span>
           <textarea
             className="field__textarea"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="Paste an article, a social post, or any block of text…"
+            placeholder={t("input.text_placeholder")}
             rows={10}
             maxLength={20000}
           />
           <span className="field__hint">
-            {text.length.toLocaleString()} / 20,000 characters
+            {t("input.text_counter", { count: text.length })}
           </span>
         </label>
       ) : (
         <label className="field">
-          <span className="field__label">URL</span>
+          <span className="field__label">{t("input.url_label")}</span>
           <input
             className="field__input"
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://example.com/article"
+            placeholder={t("input.url_placeholder")}
           />
-          <span className="field__hint">
-            The server will fetch the URL and analyze the extracted text.
-          </span>
+          <span className="field__hint">{t("input.url_hint")}</span>
         </label>
       )}
 
@@ -85,7 +85,7 @@ export default function InputPanel({ onSubmit, loading }: Props) {
           disabled={!canSubmit}
           aria-busy={loading}
         >
-          {loading ? "Analyzing…" : "Analyze"}
+          {loading ? t("input.submitting") : t("input.submit")}
         </button>
       </div>
     </form>

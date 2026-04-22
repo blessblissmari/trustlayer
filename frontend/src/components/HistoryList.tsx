@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { AnalysisReport } from "../types";
 
 interface Props {
@@ -7,11 +8,12 @@ interface Props {
 }
 
 export default function HistoryList({ reports, selectedId, onSelect }: Props) {
+  const { t } = useTranslation();
   return (
-    <section className="panel history" aria-label="History">
-      <h2>History</h2>
+    <section className="panel history" aria-label={t("history.title")}>
+      <h2>{t("history.title")}</h2>
       {reports.length === 0 ? (
-        <p className="muted">No analyses yet.</p>
+        <p className="muted">{t("history.empty")}</p>
       ) : (
         <ul className="history__list">
           {reports.map((r) => {

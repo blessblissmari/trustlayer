@@ -52,7 +52,7 @@ describe("router", () => {
         method: "POST",
         path: "/analyze/text",
         query: {},
-        body: { text },
+        body: { text, lang: "en" },
       },
       config,
     );
@@ -63,12 +63,36 @@ describe("router", () => {
       riskFlags: Array<{ code: string; severity: string }>;
       disclaimer: string;
       aiMode: string;
+      lang: string;
     };
     assert.ok(typeof report.id === "string" && report.id.length > 0);
     assert.ok(report.trustScore >= 0 && report.trustScore <= 100);
     assert.ok(report.riskFlags.length > 0, "should flag risky text");
     assert.match(report.disclaimer, /risk-analysis tool/i);
     assert.equal(report.aiMode, "mock");
+    assert.equal(report.lang, "en");
+  });
+
+  it("POST /analyze/text defaults to Russian and translates the disclaimer", async () => {
+    const config = freshConfig();
+    const res = await route(
+      {
+        method: "POST",
+        path: "/analyze/text",
+        query: {},
+        body: { text: "Это обычное спокойное предложение о новостях." },
+      },
+      config,
+    );
+    assert.equal(res.status, 200);
+    const report = JSON.parse(res.body) as {
+      disclaimer: string;
+      lang: string;
+      explanation: string;
+    };
+    assert.equal(report.lang, "ru");
+    assert.match(report.disclaimer, /инструмент оценки рисков/i);
+    assert.ok(/балл/i.test(report.explanation), "explanation should be RU");
   });
 
   it("GET /reports returns the saved report", async () => {

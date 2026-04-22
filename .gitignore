@@ -14,3 +14,8 @@ coverage/
 *.tsbuildinfo
 # Local storage for reports (dev mode)
 backend/data/
+# Generated Cloud Function deployment bundle
+backend/package.zip
+# Local test artifacts
+test-plan.md
+test-report.md
