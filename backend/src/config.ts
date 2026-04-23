@@ -10,8 +10,16 @@ export interface Config {
     endpoint: string;
   };
   storage: {
-    backend: "memory" | "file";
+    backend: "memory" | "file" | "supabase";
     filePath: string;
+  };
+  supabase: {
+    url: string;
+    serviceRoleKey: string;
+    anonKey: string;
+  };
+  quota: {
+    freeDailyLimit: number;
   };
   maxInputChars: number;
   maxUrlBytes: number;
@@ -31,7 +39,26 @@ function num(name: string, fallback: number): number {
 }
 
 export function loadConfig(): Config {
-  const aiMode = (str("AI_MODE", "mock") as Config["aiMode"]);
+  const aiMode = str("AI_MODE", "mock") as Config["aiMode"];
+  const supabaseUrl = str("SUPABASE_URL");
+  const supabaseServiceRoleKey = str("SUPABASE_SERVICE_ROLE_KEY");
+  const supabaseAnonKey = str("SUPABASE_ANON_KEY");
+
+  // If Supabase creds are configured, default the storage backend to
+  // supabase unless the operator explicitly overrides. Otherwise default
+  // to memory (preserves existing MVP behaviour).
+  const explicitBackend = str("STORAGE_BACKEND");
+  const storageBackend: Config["storage"]["backend"] =
+    explicitBackend === "file"
+      ? "file"
+      : explicitBackend === "supabase"
+        ? "supabase"
+        : explicitBackend === "memory"
+          ? "memory"
+          : supabaseUrl && supabaseServiceRoleKey
+            ? "supabase"
+            : "memory";
+
   return {
     aiMode: aiMode === "yandex" ? "yandex" : "mock",
     yandex: {
@@ -43,10 +70,16 @@ export function loadConfig(): Config {
       ),
     },
     storage: {
-      backend: (str("STORAGE_BACKEND", "memory") === "file"
-        ? "file"
-        : "memory"),
+      backend: storageBackend,
       filePath: str("STORAGE_FILE_PATH", "./data/reports.json"),
+    },
+    supabase: {
+      url: supabaseUrl,
+      serviceRoleKey: supabaseServiceRoleKey,
+      anonKey: supabaseAnonKey,
+    },
+    quota: {
+      freeDailyLimit: num("FREE_TIER_DAILY_LIMIT", 10),
     },
     maxInputChars: num("MAX_INPUT_CHARS", 20000),
     maxUrlBytes: num("MAX_URL_BYTES", 2_000_000),

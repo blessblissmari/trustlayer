@@ -713,3 +713,240 @@ a {
   font-size: 13px;
   margin-top: -8px;
 }
+
+/* ---------- auth pages ---------- */
+.app__main--auth {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.auth-card h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.auth-card__error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.auth-card__info {
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #bbf7d0;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+  width: 100%;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--radius-sm);
+  font: inherit;
+}
+
+.auth-card input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.auth-card__links {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.auth-card__links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.auth-card__links a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- user menu in header ---------- */
+.user-menu {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 0.75rem;
+}
+
+.user-menu__link {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.user-menu__link:hover {
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.user-menu__link--primary {
+  background: var(--accent-strong);
+  color: #fff;
+  border-color: var(--accent-strong);
+}
+
+.user-menu__link--primary:hover {
+  color: #fff;
+  background: var(--accent);
+}
+
+.user-menu__link--ghost {
+  font-size: 0.8rem;
+}
+
+/* ---------- account page ---------- */
+.app__main--account {
+  padding: 2rem 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.account {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.account__header h2 {
+  margin: 0 0 0.2rem;
+}
+
+.account__quota,
+.account__history {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.3rem;
+}
+
+.account__quota h3,
+.account__history h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+
+.quota-bar {
+  height: 10px;
+  background: var(--bg-elev);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.quota-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--good), var(--caution));
+}
+
+.account__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.history {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.history__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  background: var(--bg-elev);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.history__score {
+  font-weight: 600;
+  min-width: 2.5ch;
+  text-align: center;
+}
+
+.history__score--high {
+  color: var(--good);
+}
+
+.history__score--medium {
+  color: var(--mixed);
+}
+
+.history__score--low {
+  color: var(--danger);
+}
+
+.history__meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.history__kind {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.history__date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.history__preview {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 28ch;
+}
+
+.muted {
+  color: var(--text-muted);
+}

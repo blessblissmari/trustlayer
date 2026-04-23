@@ -65,6 +65,7 @@ export const handler = async (
       method: event.httpMethod ?? "GET",
       path: event.path ?? event.url ?? "/",
       query: event.queryStringParameters ?? {},
+      headers: event.headers ?? {},
       body: parsedBody,
     },
     config,

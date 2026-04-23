@@ -12,9 +12,11 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "node --test --import tsx tests/*.test.ts",
-    "package": "npm run build && rm -rf package.zip && cd dist && zip -r ../package.zip . && cd .. && zip -ur package.zip node_modules"
+    "package": "npm run build && rm -rf package.zip dist/node_modules && printf '{\"type\":\"module\"}' > dist/package.json && (cd dist && npm install --no-save --omit=dev --no-audit --no-fund --prefix . @supabase/supabase-js) && cd dist && zip -rq ../package.zip ."
   },
-  "dependencies": {},
+  "dependencies": {
+    "@supabase/supabase-js": "^2.104.0"
+  },
   "devDependencies": {
     "@types/node": "^22.7.0",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
